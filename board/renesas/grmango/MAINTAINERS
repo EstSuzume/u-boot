@@ -1,0 +1,6 @@
+GRMANGO BOARD
+S:	Orphan
+F:	board/renesas/grmango/
+F:	include/configs/grmango.h
+F:	configs/grmango_defconfig
+F:	arch/arm/dts/r7s9210-gr-mango-u-boot.dtsi

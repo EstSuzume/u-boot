@@ -19,7 +19,12 @@
  * for the non-boot0 case or by a boot0-header.
  */
         .macro ARM_VECTORS
-#ifdef CONFIG_ARCH_K3
+/*
+ * The DAPLink firmware of the Renesas RZ/A boards (e.g. GR-PEACH, GR-MANGO)
+ * only accepts a drag-and-drop image whose first instruction is
+ * "ldr pc, [pc, #imm]".
+ */
+#if defined(CONFIG_ARCH_K3) || defined(CONFIG_RZA1) || defined(CONFIG_RZA2)
 	ldr     pc, _reset
 #else
 	b	reset
@@ -109,7 +114,7 @@ _start:
 	.globl	_irq
 	.globl	_fiq
 
-#ifdef CONFIG_ARCH_K3
+#if defined(CONFIG_ARCH_K3) || defined(CONFIG_RZA1) || defined(CONFIG_RZA2)
 _reset:			.word reset
 #endif
 _undefined_instruction:	.word undefined_instruction

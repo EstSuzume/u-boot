@@ -1,0 +1,153 @@
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Device Tree Source for the GR-MANGO board (Renesas RZ/A2M R7S921058VCBG)
+ *
+ * The memory node lists the on-chip RAM only: the OctaRAM (0x60000000) is
+ * usable once the boot loader has set up its controller.
+ */
+
+/dts-v1/;
+#include "r7s9210.dtsi"
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/pinctrl/r7s9210-pinctrl.h>
+
+/ {
+	model = "GR-MANGO";
+	compatible = "renesas,gr-mango", "renesas,r7s9210";
+
+	aliases {
+		serial0 = &scif4;
+		ethernet0 = &ether1;
+	};
+
+	chosen {
+		stdout-path = "serial0:115200n8";
+	};
+
+	/* On-chip RAM; the first 128 KiB are the data-retention RAM. */
+	memory@80000000 {
+		device_type = "memory";
+		reg = <0x80000000 0x00400000>;
+	};
+};
+
+&extal_clk {
+	clock-frequency = <24000000>;
+};
+
+&ostm0 {
+	status = "okay";
+};
+
+&ostm1 {
+	status = "okay";
+};
+
+&pinctrl {
+	/* USB serial of the mbed interface (LPC11U35) */
+	scif4_pins: serial4 {
+		pinmux = <RZA2_PINMUX(PORT9, 0, 4)>,	/* TxD4 */
+			 <RZA2_PINMUX(PORT9, 1, 4)>;	/* RxD4 */
+	};
+
+	sdhi1_pins: sdhi1 {
+		pinmux = <RZA2_PINMUX(PORT6, 4, 5)>;	/* SD1_CD */
+	};
+
+	ether1_pins: ether1 {
+		pinmux = <RZA2_PINMUX(PORT3, 1, 1)>,	/* ET1_RXER */
+			 <RZA2_PINMUX(PORT3, 2, 1)>,	/* ET1_CRS */
+			 <RZA2_PINMUX(PORT3, 3, 1)>,	/* ET1_MDC */
+			 <RZA2_PINMUX(PORT3, 4, 1)>,	/* ET1_MDIO */
+			 <RZA2_PINMUX(PORT3, 5, 1)>,	/* ET1_RXD1 */
+			 <RZA2_PINMUX(PORTC, 0, 3)>,	/* ET1_TXCLK */
+			 <RZA2_PINMUX(PORTC, 1, 3)>,	/* ET1_TXD2 */
+			 <RZA2_PINMUX(PORTC, 2, 3)>,	/* ET1_TXD3 */
+			 <RZA2_PINMUX(PORTC, 3, 3)>,	/* ET1_COL */
+			 <RZA2_PINMUX(PORTC, 4, 3)>,	/* ET1_TXER */
+			 <RZA2_PINMUX(PORTC, 5, 3)>,	/* ET1_RXDV */
+			 <RZA2_PINMUX(PORTC, 6, 3)>,	/* ET1_RXD2 */
+			 <RZA2_PINMUX(PORTC, 7, 3)>,	/* ET1_RXD3 */
+			 <RZA2_PINMUX(PORTK, 0, 1)>,	/* ET1_TXEN */
+			 <RZA2_PINMUX(PORTK, 1, 1)>,	/* ET1_TXD0 */
+			 <RZA2_PINMUX(PORTK, 2, 1)>,	/* ET1_TXD1 */
+			 <RZA2_PINMUX(PORTK, 3, 1)>,	/* ET1_RXCLK */
+			 <RZA2_PINMUX(PORTK, 4, 1)>;	/* ET1_RXD0 */
+	};
+
+	usb0_pins: usb0 {
+		pinmux = <RZA2_PINMUX(PORT1, 0, 5)>,	/* VBUSEN0 */
+			 <RZA2_PINMUX(PORTJ, 5, 3)>;	/* OVRCUR0 */
+	};
+
+	/* upper Type-A port / Type-C port */
+	usb1_pins: usb1 {
+		pinmux = <RZA2_PINMUX(PORT1, 2, 5)>;	/* VBUSEN1 */
+	};
+
+	/* 0: USB C, 1: USB A */
+	usb1-sel-hog {
+		gpio-hog;
+		gpios = <RZA2_PIN(PORT2, 0) GPIO_ACTIVE_HIGH>;
+		output-low;
+		line-name = "usb1-sel";
+	};
+};
+
+&scif4 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&scif4_pins>;
+	status = "okay";
+};
+
+&sdhi1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&sdhi1_pins>;
+	bus-width = <4>;
+	status = "okay";
+};
+
+&ether1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&ether1_pins>;
+	phy-mode = "mii";
+	phy-handle = <&phy1>;
+	renesas,no-ether-link;
+	status = "okay";
+
+	phy1: ethernet-phy@0 {
+		compatible = "ethernet-phy-ieee802.3-c22";
+		reg = <0>;
+		reset-gpios = <&pinctrl RZA2_PIN(PORT6, 0) GPIO_ACTIVE_LOW>;
+	};
+};
+
+&usb2_phy0 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&usb0_pins>;
+	dr_mode = "host";
+	status = "okay";
+};
+
+&ehci0 {
+	status = "okay";
+};
+
+&ohci0 {
+	status = "okay";
+};
+
+&usb2_phy1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&usb1_pins>;
+	dr_mode = "host";
+	status = "okay";
+};
+
+&ehci1 {
+	status = "okay";
+};
+
+&ohci1 {
+	status = "okay";
+};

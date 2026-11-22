@@ -1,0 +1,18 @@
+if RZA2
+
+# required by the serial driver
+config CPU_RZA2
+	bool
+	default y
+
+choice
+	prompt "Renesas RZ/A2 board select"
+
+config TARGET_GRMANGO
+	bool "GR-MANGO board"
+
+endchoice
+
+source "board/renesas/grmango/Kconfig"
+
+endif

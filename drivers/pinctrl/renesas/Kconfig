@@ -3,7 +3,7 @@ if ARCH_RENESAS
 config PINCTRL_PFC
 	bool "Renesas pin control drivers"
 	depends on DM && ARCH_RENESAS
-	default n if CPU_RZA1
+	default n if CPU_RZA1 || CPU_RZA2
 	help
 	  Support pin multiplexing control on Renesas SoCs.
 
@@ -160,6 +160,13 @@ config PINCTRL_RZA1
 	default y if CPU_RZA1
 	help
 	  Support pin multiplexing control on Renesas RZ/A1 R7S72100 SoCs.
+
+config PINCTRL_RZA2
+	bool "Renesas RZ/A2 R7S9210 pin control driver"
+	depends on CPU_RZA2
+	default y if CPU_RZA2
+	help
+	  Support pin multiplexing control on Renesas RZ/A2 R7S9210 SoCs.
 
 config PINCTRL_RZG2L
 	bool "Renesas RZ/G2L family pin control driver"

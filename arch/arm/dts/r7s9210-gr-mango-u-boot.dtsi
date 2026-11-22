@@ -1,0 +1,27 @@
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Device Tree Source extras for U-Boot for the GR-MANGO board
+ */
+
+/ {
+	soc {
+		bootph-all;
+	};
+};
+
+&ostm0 {
+	bootph-all;
+};
+
+&pinctrl {
+	bootph-all;
+};
+
+&scif4 {
+	bootph-all;
+	clock = <66000000>;	/* P1 clock (no DM clock driver for RZ/A2) */
+};
+
+&scif4_pins {
+	bootph-all;
+};

@@ -55,7 +55,7 @@ static void sh_serial_init_generic(struct uart_port *port)
 	sci_out(port, SCFCR, SCFCR_RFRST|SCFCR_TFRST);
 	sci_in(port, SCFCR);
 	sci_out(port, SCFCR, 0);
-#if defined(CONFIG_RZA1)
+#if defined(CONFIG_RZA1) || defined(CONFIG_RZA2)
 	sci_out(port, SCSPTR, 0x0003);
 #endif
 
@@ -100,12 +100,26 @@ static void handle_error(struct uart_port *port)
 
 static int serial_raw_putc(struct uart_port *port, const char c)
 {
+#if defined(CONFIG_RZA2)
+	/*
+	 * TEND of the RZ/A2 SCIFA is 0 after reset and is only set once a
+	 * transmission has completed, so it cannot tell whether the first
+	 * character may be sent. Wait for room in the FIFO (TDFE, 1 after
+	 * reset) instead; writing FTDR clears it until the data has moved
+	 * on to the shift register.
+	 */
+	if (!(sci_in(port, SCxSR) & SCxSR_TDxE(port)))
+		return -EAGAIN;
+
+	sci_out(port, SCxTDR, c);
+#else
 	/* Tx fifo is empty */
 	if (!(sci_in(port, SCxSR) & SCxSR_TEND(port)))
 		return -EAGAIN;
 
 	sci_out(port, SCxTDR, c);
 	sci_out(port, SCxSR, sci_in(port, SCxSR) & ~SCxSR_TEND(port));
+#endif
 
 	return 0;
 }
@@ -243,6 +257,7 @@ static const struct dm_serial_ops sh_serial_ops = {
 static const struct udevice_id sh_serial_id[] ={
 	{.compatible = "renesas,sci", .data = PORT_SCI},
 	{.compatible = "renesas,scif", .data = PORT_SCIF},
+	{.compatible = "renesas,scif-r7s9210", .data = PORT_SCIF},
 	{.compatible = "renesas,scif-r9a07g044", .data = PORT_SCIFA},
 	{.compatible = "renesas,scifa", .data = PORT_SCIFA},
 	{.compatible = "renesas,hscif", .data = PORT_HSCIF},

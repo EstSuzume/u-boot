@@ -59,6 +59,10 @@ config RZA1
 	prompt "Renesas ARM SoCs RZ/A1 (32bit)"
 	select CPU_V7A
 
+config RZA2
+	prompt "Renesas ARM SoCs RZ/A2 (32bit)"
+	select CPU_V7A
+
 config RZN1
 	prompt "Renesas ARM SoCs RZ/N1 (32bit)"
 	select CPU_V7A
@@ -104,6 +108,7 @@ config SYS_SOC
 source "arch/arm/mach-renesas/Kconfig.32"
 source "arch/arm/mach-renesas/Kconfig.64"
 source "arch/arm/mach-renesas/Kconfig.rza1"
+source "arch/arm/mach-renesas/Kconfig.rza2"
 source "arch/arm/mach-renesas/Kconfig.rzn1"
 source "arch/arm/mach-renesas/Kconfig.rzg2l"
 

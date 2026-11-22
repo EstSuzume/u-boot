@@ -1,0 +1,21 @@
+if TARGET_GRMANGO
+
+config SYS_BOARD
+	default "grmango"
+
+config SYS_VENDOR
+	default "renesas"
+
+config SYS_CONFIG_NAME
+	default "grmango"
+
+config GRMANGO_OCTARAM_SIZE
+	hex "Size of the OctaRAM mapped at 0x60000000"
+	default 0x800000
+	help
+	  The board carries a 16 MiB APS12808L, but the address conversion
+	  of the RZ/A2M Octa memory controller drops bit 23 of the offset
+	  (verified on the board: with DSR1 = 16 MiB, 0x60800000 aliases
+	  0x60000000), so only 8 MiB can be memory mapped.
+
+endif
